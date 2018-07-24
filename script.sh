@@ -7,6 +7,6 @@ git clone https://github.com/jainbhavya65/nodejs.git
 rsync -Parv nodejs ../../
 elif [ "$JOB_NAME" = "docker-build" ];
 then
-cd ../nodejs
-docker run -t $image_name:$i .
+pwd
+#docker run -t $image_name:$i .
 fi
