@@ -9,4 +9,4 @@ if [ "$JOB_NAME"=="docker-build" ];
 then
 cd nodejs
 docker run -t $image_name:$i .
-if
+fi
