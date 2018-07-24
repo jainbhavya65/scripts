@@ -8,5 +8,5 @@ rsync -Parv nodejs ../../
 elif [ "$JOB_NAME" = "docker-build" ];
 then
 cd ../../nodejs
-sudo docker budlt -t $image_name:$i .
+sudo docker build -t $image_name:$i .
 fi
