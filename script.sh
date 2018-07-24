@@ -7,6 +7,6 @@ git clone https://github.com/jainbhavya65/nodejs.git
 fi
 if [ "$JOB_NAME"=="docker-build" ];
 then
-cd nodejs
+cd ../Git-copy/scripts/nodejs
 docker run -t $image_name:$i .
 fi
