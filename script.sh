@@ -9,4 +9,7 @@ elif [ "$JOB_NAME" = "docker-build" ];
 then
 cd ../../nodejs
 sudo docker build -t $image_name:$i .
+elif [ "$JOB_NAME" = "docker-testing" ];
+then
+docker run $image_name:$i /bin/cat server.js
 fi
