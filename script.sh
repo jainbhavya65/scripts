@@ -5,8 +5,7 @@ if [ "$JOB_NAME"=="Git-copy" ];
 then
 git clone https://github.com/jainbhavya65/nodejs.git
 rsync -Parv nodejs ../../
-fi
-if [ "$JOB_NAME"=="docker-build" ];
+elif [ "$JOB_NAME"=="docker-build" ];
 then
 cd ../Git-copy/scripts/nodejs
 docker run -t $image_name:$i .
