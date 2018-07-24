@@ -4,7 +4,7 @@ i=$(expr $i + 1)
 if [ "$JOB_NAME" = "Git-copy" ];
 then
 git clone https://github.com/jainbhavya65/nodejs.git
-rsync -Parv nodejs ../../
+sudo rsync -Parv nodejs ../../
 elif [ "$JOB_NAME" = "docker-build" ];
 then
 cd ../../nodejs
