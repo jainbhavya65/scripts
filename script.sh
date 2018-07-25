@@ -11,5 +11,9 @@ cd ../../nodejs
 sudo docker build -t $image_name:$i .
 elif [ "$JOB_NAME" = "docker-testing" ];
 then
-docker run $image_name:$i /bin/cat server.js
-fi
+sudo docker run $image_name:$i /bin/cat server.js
+elif [ "$JOB_NAME" = "docker-push" ];
+then
+sudo docker login -u jainbhavya65 -p rX8n6zUW8BMf8j39yl4HJl1
+sudo docker push $image_name:$i 
+fi 
