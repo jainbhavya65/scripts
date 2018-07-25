@@ -1,3 +1,4 @@
+
 image_name=jainbhavya65/jenkins
 i=$(sudo docker images | grep -i jainbhavya65/jenkins | cut -d ' '  -f26 | wc -l )
 if [ "$JOB_NAME" = "Git-copy" ];
@@ -14,6 +15,6 @@ then
 sudo docker run $image_name:$i /bin/cat server.js
 elif [ "$JOB_NAME" = "docker-push" ];
 then
-sudo docker login -u jainbhavya65 -p rX8n6zUW8BMf8j39yl4HJl1
+sudo docker login --username=$dockeruser --password=$dockerpassword
 sudo docker push $image_name:$i 
 fi 
