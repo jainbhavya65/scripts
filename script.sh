@@ -18,5 +18,5 @@ sudo docker login --username=$dockeruser --password=$dockerpassword
 sudo docker push $image_name:$i 
 elif [ "$JOB_NAME" = "test-run" ];
 then
-gcloud container clusters list
+gcloud auth list
 fi
