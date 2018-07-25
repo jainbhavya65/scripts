@@ -1,4 +1,3 @@
-
 image_name=jainbhavya65/jenkins
 i=$(sudo docker images | grep -i jainbhavya65/jenkins | cut -d ' '  -f26 | wc -l )
 if [ "$JOB_NAME" = "Git-copy" ];
@@ -17,4 +16,7 @@ elif [ "$JOB_NAME" = "docker-push" ];
 then
 sudo docker login --username=$dockeruser --password=$dockerpassword
 sudo docker push $image_name:$i 
-fi 
+elif [ "$JOB_NAME" = "test-run" ];
+then
+gcloud container cluster list
+fi
