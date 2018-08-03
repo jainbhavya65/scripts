@@ -1,14 +1,12 @@
-image_name=jainbhavya65/jenkins
-i=$(sudo docker images | grep -i jainbhavya65/jenkins | cut -d ' '  -f26 | wc -l )
+image_name=itsolvs/iface-crm-app
 if [ "$JOB_NAME" = "Git-copy" ];
 then
 git clone https://github.com/jainbhavya65/nodejs.git
-#sudo rsync -Parv nodejs ../../
 elif [ "$JOB_NAME" = "docker-build" ];
 then
-i=$(expr $i + 1)
 cd nodejs
-#cd ../../nodejs
+i=$(cat app.yaml | grep -i iface-crm-app | awk -F: '/- image: / {print $3}')
+echo $i
 sudo docker build -t $image_name:$i .
 elif [ "$JOB_NAME" = "docker-testing" ];
 then
