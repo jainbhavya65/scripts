@@ -12,6 +12,9 @@ projectname=$(sed -sn "$P_Select"p project_select.txt | cut -d ' ' -f2 )
 #read -p "Enter No of Node(if you want to temporary down it just enter it 0):" resize
 echo "Selected Project:" $projectname
 y=$(echo "set")
+echo "========================================="
+echo " Seting Project" $projectname
+echo "========================================="
 gcloud config $y project $projectname
 cluster_list=$(gcloud container clusters list | awk '{print $1}' | tail -n +2)
 for x in $cluster_list
@@ -29,17 +32,18 @@ read -p "Enter Option(for down all Just Enter all):" o
          echo "Selected Cluster Name:" $cluster
          pool_list=$(gcloud container  node-pools list --cluster $cluster| awk '{print $1}' | tail -n +2)
          pool_name=$(gcloud container  node-pools describe $pool_list --cluster $cluster | grep compute/v1 | awk -F '/' '{print $11}'|awk -F '-' '{print $2"-"$3"-"$4}')
-         #gcloud container clusters update $cluster  --enable-autoscaling
-         #gcloud container node-pools update $(gcloud container node-pools list --cluster $cluster | awk {'print $1'} | tail -n +2) --cluster $cluster --enable-autorepair
+         #gcloud container clusters update $cluster  --enable-autoscaling  --min-nodes 1 --max-nodes 5
          nodes_name=$(gcloud compute instances list | awk '{print $1}'| grep -i $pool_name)
           for z in $nodes_name
-          do
-           echo $z             
-           #gcloud compute instances start $z
+          do              
+	  echo "==================================================================="
+	  echo " Starting Node" $z
+	  echo "==================================================================="
+           gcloud compute instances start $z
           done
    else
 	echo "Selected Cluster Name: ALL cluster are going to down" 
-         #gcloud container clusters update $v  --enable-autoscaling
+         gcloud container clusters update $v  --enable-autoscaling  --min-nodes 1 --max-nodes 5
          #gcloud container node-pools update $(gcloud container node-pools list --cluster $v | awk {'print $1'} | tail -n +2) --cluster $v  --enable-autorepair
         node_all=$(gcloud compute instances list | awk '{print $1}' | tail -n +2)
           for z in $node_all
@@ -48,3 +52,6 @@ read -p "Enter Option(for down all Just Enter all):" o
            #gcloud compute instances start $z
           done
 fi
+rm -f test.txt
+rm -f cluster_no.txt
+rm -f project_list.txt
