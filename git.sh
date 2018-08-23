@@ -1,3 +1,4 @@
+git init
 git add .
 git commit -m "test"
 user=$(zenity --password --username 2> /dev/null)
