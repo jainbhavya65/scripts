@@ -7,4 +7,3 @@ git push << EOF
 $username
 $password
 EOF
-
