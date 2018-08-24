@@ -1,0 +1,5 @@
+echo "# "$(git push origin $branch) | zenity --progress --title="Git Push" --text="Pushing" --pulsate --auto-close; 
+if [ $? == "1" ]  
+then  
+exit 1  
+ fi

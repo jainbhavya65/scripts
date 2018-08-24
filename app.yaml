@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: bloomer-app
+  namespace: iface-product-crm
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bloomer-app
+    spec:
+      affinity:
+       nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+         nodeSelectorTerms:
+         - matchExpressions:
+           - key: "failure-domain.beta.kubernetes.io/zone"
+             operator: In
+             values:
+             - us-central1-a
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+           matchExpressions:
+           - key: bloomer-app
+             operator: In
+             values:
+             - bloomer-app
+      imagePullSecrets:
+        - name: docker-registry-key
+      containers:
+        - image: index.docker.io/itsolvs/bloomer-app:v6
+          name: bloomer-app
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: iface-crm-app
+      nodeSelector:
+       bloomer-app: bloomer-app

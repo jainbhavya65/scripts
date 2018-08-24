@@ -57,9 +57,6 @@ git_in=$(zenity --form --add-entry="Comment For Commit" --add-entry="Branch Name
 IFS="|" read -r comment branch  <<< "$git_in"
 git add .
 git commit -m $comment
-user=$(zenity --password --username 2> /dev/null)
-IFS="|" read -r username password   <<< "$user"
-git push origin $branch <EOF
-$username
-$password
-EOF
+#user=$(zenity --password --username 2> /dev/null)
+#IFS="|" read -r username password   <<< "$user"
+git push origin $branch 
