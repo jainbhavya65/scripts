@@ -1,0 +1,2 @@
+zenity --question --text="do it already" --ok-label="Again" --cancel-label="ok" 2> /dev/null
+echo $?

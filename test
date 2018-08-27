@@ -1,5 +1,6 @@
-echo "# "$(git push origin $branch) | zenity --progress --title="Git Push" --text="Pushing" --pulsate --auto-close; 
-if [ $? == "1" ]  
-then  
-exit 1  
- fi
+#!/bin/bash
+option=$(cat option_value | zenity --list --column "Select Process" 2> /dev/null)
+if grep -Fxq "$option" done_task | uniq
+then
+echo $(grep -Fx $option done_task | wc -l ) $(grep -Fx $option done_task | uniq)
+fi

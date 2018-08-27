@@ -1,0 +1,7 @@
+if [ -s "done_task" ]
+then
+echo hello
+else
+zenity --info --text="No Task Done yet" 2> /dev/null
+fi
+
