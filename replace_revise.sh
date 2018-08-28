@@ -4,7 +4,12 @@ exit1()
 {
 if [ $? == "1" ]
 then
-echo $Status > done_task
+done_task=()
+for i in {0..5}
+do
+done_task[$i]=${Status[$i]}
+done
+echo ${done_task[@]} > done_task
 exit 1
 fi
 }
@@ -21,12 +26,6 @@ option=$( zenity --list --column "Select Process" --column "Status" "config.deve
 exit1
 }
 ##################################################################################################
-Done()
-{
-zenity --text-info --filename="done_task" 2> /dev/null
-exit1
-}
-###################################################################################################
 config_development()
 {
 file1=$(zenity --file-selection --title="Select config.development.ts " 2> /dev/null)
@@ -38,11 +37,11 @@ local_prod
 if [ $prod_local == "Production" ]
 then
 sed -e "/apiUrl: 'http:/ s|^|//|" -e "/apiUrl: 'https:/ s|^/.*.apiUrl|apiUrl|" -i $file1
-gnome-terminal -x bash -c "cat $file1 && sleep 3"
+gnome-terminal -x bash -c "cat $file1 && sleep 1"
 elif [ $prod_local == "Local" ]
 then
 sed -i -e "/apiUrl: 'http:/ s|^/.*.apiUrl|apiUrl|" -e "/apiUrl: 'https:/ s|^|//|" $file1
-gnome-terminal -x bash -c "cat $file1 && sleep 3"
+gnome-terminal -x bash -c "cat $file1 && sleep 1"
 fi
 else
 zenity --title "Worng File Selected"  --error --text="Please Select config.development.ts File" 2> /dev/null
@@ -62,11 +61,11 @@ local_prod
 if [ $prod_local == "Production" ]
 then
 sed -i "s|process.env.NODE_ENV = 'development'|process.env.NODE_ENV = 'production'|" $file2
-gnome-terminal -x bash -c "cat server.js | grep -i process.env && sleep 5"
+gnome-terminal -x bash -c "cat server.js | grep -i process.env && sleep 1"
 elif [ $prod_local == "Local" ]
 then
 sed -i "s|process.env.NODE_ENV = 'production'|process.env.NODE_ENV = 'development'|" $file2
-gnome-terminal -x bash -c "cat $file2 | grep -i process.env && sleep 5"
+gnome-terminal -x bash -c "cat $file2 | grep -i process.env && sleep 1"
 fi
 else 
 zenity --title "Worng File Selected"  --error --text="Please Select server.js File" 2> /dev/null
@@ -98,7 +97,7 @@ then
 zenity --error --text="Same version Please change version" 2> /dev/null
 else
 sed -i "s|index.docker.io/itsolvs/bloomer-app:$version|index.docker.io/itsolvs/bloomer-app:$new_version|" $file3
-gnome-terminal -x bash -c "cat app.yaml | grep -i index.docker.io && sleep 3"
+gnome-terminal -x bash -c "cat app.yaml | grep -i index.docker.io && sleep 1"
 fi
 fi
 Status[3]="Done"
@@ -145,10 +144,36 @@ fi
 Status[5]="Done"
 }
 ###########################################################################################################
-touch done_task
+all_done()
+{
+Done=()
+for i in {0..5}
+do
+Done[$i]=Done
+done
+diff=$(diff <(printf "%s\n" "${Status[@]}") <(printf "%s\n" "${Done[@]}"))
+if [[ -z "$diff" ]]
+then
 Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
+fi
+}
+
+###########################################################################################################
+if [ -s "done_task" ]
+then
+i=0
+Status=()
+for x in $(cat done_task)
+do
+Status[$i]=$x
+i=`expr $i + 1`
+done
+else
+Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
+fi
 while [ $? == "0" ]
 do
+all_done
 Popup
 exit1
 ###########################
@@ -170,7 +195,7 @@ fi
 ############
 if [ $option == "Server.js" ]
 then
-if grep -Fxq "$option" done_task
+if [ ${Status[1]} == "Done" ]
 then
 zenity --question --text="do it already" --ok-label="Again" --cancel-label="ok" 2> /dev/null
 case $? in
@@ -186,7 +211,7 @@ fi
 ###########
 if [ $option == "Client_Production_Build" ]
 then
-if grep -Fxq "$option" done_task
+if [ ${Status[2]} == "Done" ]
 then
 zenity --question --text="do it already" --ok-label="Again" --cancel-label="ok" 2> /dev/null
 case $? in
@@ -202,7 +227,7 @@ fi
 ###########
 if [ $option == "Edit_App.yaml" ]
 then
-if grep -Fxq "$option" done_task
+if [ ${Status[3]} == "Done" ]
 then
 zenity --question --text="do it already" --ok-label="Again" --cancel-label="ok" 2> /dev/null
 case $? in
@@ -218,7 +243,7 @@ fi
 ##########
 if [ $option == "Gulp_Build" ]
 then
-if grep -Fxq "$option" done_task
+if [ ${Status[4]} == "Done" ]
 then
 zenity --question --text="do it already" --ok-label="Again" --cancel-label="ok" 2> /dev/null
 case $? in
@@ -234,7 +259,7 @@ fi
 ##########
 if [ $option == "Git_Push" ]
 then 
-if grep -Fxq "$option" done_task
+if [ ${Status[5]} == "Done" ]
 then
 zenity --question --text="do it already" --ok-label="Again" --cancel-label="ok" 2> /dev/null
 case $? in
@@ -244,7 +269,6 @@ case $? in
       git_push ;;
 esac
 else
-echo  Git_Push >> done_task
 git_push
 fi
 fi

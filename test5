@@ -1,0 +1,15 @@
+#!/bin/bash
+i=0
+status=()
+for x in $(cat done_task)
+do
+status[$i]=$x
+i=`expr $i + 1`
+done
+echo ${status[0]}
+echo ${status[1]}
+echo ${status[2]}
+echo ${status[3]}
+echo ${status[4]}
+echo ${status[5]}
+echo ${status[@]}
