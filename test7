@@ -1,0 +1,4 @@
+git_in=$(zenity --forms --title="Git" --add-entry="Comment For Commit" --add-entry="Branch Name" 2> /dev/null)
+IFS="|" read -r comment branch  <<< "$git_in"
+echo $comment
+echo $branch

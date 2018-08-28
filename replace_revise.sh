@@ -1,4 +1,19 @@
 #!/bin/bash
+# resizes the window to full height and 50% width and moves into upper right corner
+
+#define the height in px of the top system-bar:
+TOPMARGIN=27
+
+#sum in px of all horizontal borders:
+RIGHTMARGIN=10
+
+# get width of screen and height of screen
+SCREEN_WIDTH=$(xwininfo -root | awk '$1=="Width:" {print $2}')
+SCREEN_HEIGHT=$(xwininfo -root | awk '$1=="Height:" {print $2}')
+
+# new width and height
+W=$(( $SCREEN_WIDTH / 2 - $RIGHTMARGIN ))
+H=$(( $SCREEN_HEIGHT - 2 * $TOPMARGIN ))
 #########################################################################################
 exit1()
 {
@@ -22,7 +37,7 @@ exit1
 ##################################################################################################
 Popup()
 {
-option=$( zenity --list --column "Select Process" --column "Status" "config.development.ts" "${Status[0]}" "Server.js" "${Status[1]}" "Client_Production_Build" "${Status[2]}" "Edit_App.yaml" "${Status[3]}" "Gulp_Build" "${Status[4]}" "Git_Push" "${Status[5]}" --width=300 --height=250 2> /dev/null)
+option=$( zenity --list --column "Select Process" --column "Status" "config.development.ts" "${Status[0]}" "Server.js" "${Status[1]}" "Client_Production_Build" "${Status[2]}" "Edit_App.yaml" "${Status[3]}" "Gulp_Build" "${Status[4]}" "Git_Push" "${Status[5]}" --width=$W --height=$H 2> /dev/null)
 exit1
 }
 ##################################################################################################
@@ -36,11 +51,11 @@ then
 local_prod
 if [ $prod_local == "Production" ]
 then
-sed -e "/apiUrl: 'http:/ s|^|//|" -e "/apiUrl: 'https:/ s|^/.*.apiUrl|apiUrl|" -i $file1
+sed -e "/apiUrl: 'http:/ s|^|//|" -e "/apiUrl: 'https:/ s|/.*.apiUrl|apiUrl|" -i $file1
 gnome-terminal -x bash -c "cat $file1 && sleep 1"
 elif [ $prod_local == "Local" ]
 then
-sed -i -e "/apiUrl: 'http:/ s|^/.*.apiUrl|apiUrl|" -e "/apiUrl: 'https:/ s|^|//|" $file1
+sed -i -e "/apiUrl: 'http:/ s|/.*.apiUrl|apiUrl|" -e "/apiUrl: 'https:/ s|^|//|" $file1
 gnome-terminal -x bash -c "cat $file1 && sleep 1"
 fi
 else
@@ -79,8 +94,7 @@ Production_build()
 directory1=$(zenity --file-selection --directory --title="Select Production Build directory" 2> /dev/null)
 exit1
 cd $directory1
-gnome-terminal -x bash -c "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --prod"
-Status[2]="Done"
+gnome-terminal -x bash -c 'node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --prod && Status[2]="Done"'
 }
 ###################################################################################################
 app_yaml()
@@ -109,8 +123,7 @@ gulp_build()
 directory2=$(zenity --file-selection --directory --title="Gulp Build Directory" 2> /dev/null)
 exit1
 cd $directory2
-gnome-terminal -x bash -c "gulp build"
-Status[4]="Done"
+gnome-terminal -x bash -c 'gulp build && Status[4]="Done"'
 }
 ###########################################################################################################
 git_push()
@@ -120,18 +133,19 @@ then
 directory3=$(zenity --file-selection --directory --title="Directory For Git Push" 2> /dev/null)
 exit1
 cd $directory3
-exit1
+else
+cd $directory2
 fi
 git_in=$(zenity --forms --title="Git" --add-entry="Comment For Commit" --add-entry="Branch Name" 2> /dev/null)
 exit1
 IFS="|" read -r comment branch  <<< "$git_in"
 git add .
-git commit -m $comment
+git commit -m "$comment"
 cred_type=$(zenity --list "BY_SSH" "BY_Credentials" --column "Select Method" 2> /dev/null)
 exit1
 if [ $cred_type == "BY_SSH" ]
 then
-gnome-terminal -x bash -c "git push origin $branch && sleep 5"
+gnome-terminal -x bash -c "git push origin $branch && sleep 100"
 elif [ $cred_type == "BY_Credentials" ]
 then
 user=$(zenity --password --username 2> /dev/null)
@@ -140,7 +154,7 @@ if [[ -z $username  ]] || [[ -z $password ]]
 then
 zenity --error --text="Please Enter Username and Password" 2> /dev/null
 else
-gnome-terminal -x bash -c "git push https://$username:$password@github.com/jainbhavya65/scripts.git $branch && sleep 5" 
+gnome-terminal -x bash -c "git push https://$username:$password@github.com/jainbhavya65/scripts.git $branch" 
 fi
 fi
 Status[5]="Done"
