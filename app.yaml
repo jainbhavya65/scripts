@@ -30,7 +30,7 @@ spec:
       imagePullSecrets:
         - name: docker-registry-key
       containers:
-        - image: index.docker.io/itsolvs/bloomer-app:v5
+        - image: index.docker.io/itsolvs/bloomer-app:v6
           name: bloomer-app
           imagePullPolicy: Always
           ports:
