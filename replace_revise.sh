@@ -131,6 +131,7 @@ git_push()
 if [ -z $directory2 ]
 then
 directory3=$(zenity --file-selection --directory --title="Directory For Git Push" 2> /dev/null)
+echo $directory3
 exit1
 cd $directory3
 else
