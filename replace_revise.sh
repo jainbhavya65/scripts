@@ -9,7 +9,7 @@ for i in {0..5}
 do
 done_task[$i]=${Status[$i]}
 done
-echo ${done_task[@]} > done_task
+echo ${done_task[@]} > /tmp/done_task
 exit 1
 fi
 }
@@ -22,7 +22,7 @@ exit1
 ##################################################################################################
 Popup()
 {
-option=$( zenity --list --column "Select Process" --column "Status" "config.development.ts" "${Status[0]}" "Server.js" "${Status[1]}" "Client_Production_Build" "${Status[2]}" "Edit_App.yaml" "${Status[3]}" "Gulp_Build" "${Status[4]}" "Git_Push" "${Status[5]}" 2> /dev/null)
+option=$( zenity --list --column "Select Process" --column "Status" "config.development.ts" "${Status[0]}" "Server.js" "${Status[1]}" "Client_Production_Build" "${Status[2]}" "Edit_App.yaml" "${Status[3]}" "Gulp_Build" "${Status[4]}" "Git_Push" "${Status[5]}" --width=300 --height=250 2> /dev/null)
 exit1
 }
 ##################################################################################################
@@ -95,12 +95,13 @@ new_version=$(zenity --entry --title="Version Intake" --text="Current Version: "
 if [ $version == "$new_version" ]
 then
 zenity --error --text="Same version Please change version" 2> /dev/null
+Status[3]="Not_Done"
 else
 sed -i "s|index.docker.io/itsolvs/bloomer-app:$version|index.docker.io/itsolvs/bloomer-app:$new_version|" $file3
 gnome-terminal -x bash -c "cat app.yaml | grep -i index.docker.io && sleep 1"
-fi
-fi
 Status[3]="Done"
+fi
+fi
 }
 ###########################################################################################################
 gulp_build()
@@ -161,11 +162,11 @@ fi
 ###########################################################################################################
 check_done_task()
 {
-if [ -s "done_task" ]
+if [ -s "/tmp/done_task" ]
 then
 i=0
 Status=()
-for x in $(cat done_task)
+for x in $(cat /tmp/done_task)
 do
 Status[$i]=$x
 i=`expr $i + 1`
