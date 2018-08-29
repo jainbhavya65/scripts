@@ -1,6 +1,0 @@
-#!/bin/bash
-option=$(cat option_value | zenity --list --column "Select Process" 2> /dev/null)
-if grep -Fxq "$option" done_task | uniq
-then
-echo $(grep -Fx $option done_task | wc -l ) $(grep -Fx $option done_task | uniq)
-fi
