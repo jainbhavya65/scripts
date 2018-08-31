@@ -41,11 +41,43 @@ option=$( zenity --list --column "Select Process" --column "Status" "Git_Pull" "
 exit1
 }
 ##################################################################################################
+dir_selection()
+{
+if [ -s "/tmp/api_folder_status" ]
+then
+i=0
+dir=()
+for x in $(cat /tmp/api_folder_status)
+do
+dir[$i]=$x
+i=`expr $i + 1`
+done
+zenity --question --title "Path for Git_Pull" --text=${dir[0]}" \n Are you sure?" --cancel-label="Browse"
+if [ $? == "1" ]
+then
+dir[0]
+fi
+echo 
+zenity --question --title "Path for Change_Backend_Config" --text=${dir[1]}" \n Are you sure?" --cancel-label="Browse"
+dir2=$(zenity --question --title "Path for Change_Docker_Version" --text=${dir[2]}" \n Are you sure?" --cancel-label="Browse")
+dir3=$(zenity --question --title "Path for Git_Push" --text=${dir[3]}" \n Are you sure?" --cancel-label="Browse")
+else
+dir=()
+dir[0]=$(zenity --title="Select Path for Git_Pull" --file-selection 2> /dev/null)
+dir[1]=$(zenity --title="Select path for Change_Backend_Config" --file-selection 2> /dev/null)
+dir[2]=$(zenity --title="Select Path for Change_Docker_Version" --file-selection 2> /dev/null)
+dir[3]=$(zenity --title="Select Path for Git_Push" --file-selection 2> /dev/null)
+echo ${dir[@]} > /tmp/api_folder_status
+fi
+}
+##################################################################################################
 app_js()
 {
-file2=$(zenity --file-selection --title="Select app.js" 2> /dev/null)
+dir_selection
+cd ${dir[0]}
+filie2=$(zenity --file-selection --title="Select app.js" 2> /dev/null)
 exit1
-server=$(echo $file2 | awk -F/ '{print $NF}')
+echo $file2
 if [ $server == "app.js" ]
 then
 local_prod
