@@ -24,7 +24,7 @@ for i in {0..5}
 do
 done_task[$i]=${Status[$i]}
 done
-echo ${done_task[@]} > /tmp/done_task
+echo ${done_task[@]} > /tmp/crm_done_task
 exit 1
 fi
 }
@@ -53,16 +53,17 @@ if [ $prod_local == "Production" ]
 then
 sed -e "/apiUrl: 'http:/ s|^|//|" -e "/apiUrl: 'https:/ s|/.*.apiUrl|apiUrl|" -i $file1
 gnome-terminal -x bash -c "cat $file1 && sleep 1"
+Status[0]="Done"
 elif [ $prod_local == "Local" ]
 then
 sed -i -e "/apiUrl: 'http:/ s|/.*.apiUrl|apiUrl|" -e "/apiUrl: 'https:/ s|^|//|" $file1
 gnome-terminal -x bash -c "cat $file1 && sleep 1"
+Status[0]="Done"
 fi
 else
 zenity --title "Worng File Selected"  --error --text="Please Select config.development.ts File" 2> /dev/null
 config_development
 fi
-Status[0]="Done"
 }
 ###################################################################################################
 server_js()
@@ -77,16 +78,17 @@ if [ $prod_local == "Production" ]
 then
 sed -i "s|process.env.NODE_ENV = 'development'|process.env.NODE_ENV = 'production'|" $file2
 gnome-terminal -x bash -c "cat server.js | grep -i process.env && sleep 1"
+Status[1]="Done"
 elif [ $prod_local == "Local" ]
 then
 sed -i "s|process.env.NODE_ENV = 'production'|process.env.NODE_ENV = 'development'|" $file2
 gnome-terminal -x bash -c "cat $file2 | grep -i process.env && sleep 1"
+Status[1]="Done"
 fi
 else 
 zenity --title "Worng File Selected"  --error --text="Please Select server.js File" 2> /dev/null
 server_js
 fi
-Status[1]="Done"
 }
 ###################################################################################################
 Production_build()
@@ -147,6 +149,7 @@ exit1
 if [ $cred_type == "BY_SSH" ]
 then
 gnome-terminal -x bash -c "git push origin $branch && sleep 100"
+Status[5]="Done"
 elif [ $cred_type == "BY_Credentials" ]
 then
 user=$(zenity --password --username 2> /dev/null)
@@ -154,11 +157,12 @@ IFS="|" read -r username password   <<< "$user";
 if [[ -z $username  ]] || [[ -z $password ]]
 then
 zenity --error --text="Please Enter Username and Password" 2> /dev/null
+Status[5]="Not_Done"
 else
 gnome-terminal -x bash -c "git push https://$username:$password@github.com/jainbhavya65/scripts.git $branch" 
-fi
-fi
 Status[5]="Done"
+fi
+fi
 }
 ###########################################################################################################
 all_done()
