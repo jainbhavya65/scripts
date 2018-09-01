@@ -19,9 +19,9 @@ user=$(who|awk '{print $1}')
 homedir=$(cat /etc/passwd | grep -i $user | cut -d ":" -f6)
 user1=$(echo $homedir | awk -F/ "{print $3}")
 group=$(cat /etc/group | grep -i $user1 | awk -F: {"print $1"})
-wget -P /usr/local/src/crmpromote ftp://10.0.0.6/CRM-PROMOTE.png 
+wget -P /usr/local/src/crmpromote ftp://10.0.0.9/CRM-PROMOTE.png 
 chown -R $user:$group /usr/local/src/crmpromote
-wget -P  $homedir/Desktop ftp://10.0.0.6/Crm.desktop
+wget -P  $homedir/Desktop ftp://10.0.0.9/Crm.desktop
 chown -R $user:$group $homedir/Desktop/Crm.desktop
 chmod +x $homedir/Desktop/Crm.desktop
 sed -i "9i rm -rf /tmp/crm_done_task" /etc/init/shutdown.conf
@@ -36,14 +36,14 @@ TOPMARGIN=27
 #sum in px of all horizontal borders:
 RIGHTMARGIN=10
 
-# get width of screen and height of screen
+ #get width of screen and height of screen
 SCREEN_WIDTH=$(xwininfo -root | awk '$1=="Width:" {print $2}')
 SCREEN_HEIGHT=$(xwininfo -root | awk '$1=="Height:" {print $2}')
 
-# new width and height
+ #new width and height
 W=$(( $SCREEN_WIDTH / 2 - $RIGHTMARGIN ))
 H=$(( $SCREEN_HEIGHT - 2 * $TOPMARGIN ))
-#########################################################################################
+########################################################################################
 exit1()
 {
 if [ $? == "1" ]
@@ -57,21 +57,55 @@ echo ${done_task[@]} > /tmp/crm_done_task
 exit 1
 fi
 }
-##################################################################################################
+#################################################################################################
 local_prod()
 {
 prod_local=$(zenity --list "Production" "Local" --column "Where want to run" 2> /dev/null)
 exit1
 }
-##################################################################################################
+#################################################################################################
+dir_selection()
+{
+if [ ! -s "/tmp/app_folder_status" ]
+then
+echo "Git_Pull:" >> /tmp/app_folder_status
+echo "Change_forntend_config:" >> /tmp/app_folder_status
+echo "Change_Backend_Config:" >> /tmp/app_folder_status
+echo "Client_Production_Build:" >> /tmp/app_folder_status
+echo "Change_Docker_Version:" >> /tmp/app_folder_status
+echo "Gulp_Build:" >> /tmp/app_folder_status
+echo "Git_Push:" >> /tmp/app_folder_status
+fi
+}
+#################################################################################################
 Popup()
 {
 option=$( zenity --list --column "Select Process" --column "Status" "Git_Pull" "${Status[0]}"  "Change_forntend_config" "${Status[1]}" "Change_Backend_Config" "${Status[2]}" "Client_Production_Build" "${Status[3]}" "Change_Docker_Version" "${Status[4]}" "Gulp_Build" "${Status[5]}" "Git_Push" "${Status[6]}" --width=$W --height=$H 2> /dev/null)
 exit1
 }
-##################################################################################################
+#################################################################################################
 config_development()
 {
+dir_selection
+dir1=$(cat /tmp/app_folder_status | grep "Change_forntend_config:"| cut -d ':' -f2  )
+if [ -z $dir1 ]
+then
+dir11=$(zenity --title="Select path for Change_frontend_Config" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_forntend_config:|Change_forntend_config:$dir11|g" /tmp/app_folder_status
+cd $dir11
+else
+dir12=$(zenity --question --title="Change_forntend_config Directory" --text=$dir1"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir13=$(zenity --title="Select path for Change_forntend_config" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_forntend_config:|Change_forntend_config:$dir13|g" /tmp/app_folder_status
+cd $dir13
+else
+cd $dir1
+fi
+fi
 file1=$(zenity --file-selection --title="Select config.development.ts" 2> /dev/null)
 exit1
 config=$(echo $file1 | awk -F/ '{print $NF}')
@@ -94,9 +128,29 @@ zenity --title "Worng File Selected"  --error --text="Please Select Change_fornt
 config_development
 fi
 }
-###################################################################################################
+##################################################################################################
 server_js()
 {
+dir_selection
+dir2=$(cat /tmp/app_folder_status | grep "Change_Backend_Config:"| cut -d ':' -f2  )
+if [ -z $dir2 ]
+then
+dir21=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir21|g" /tmp/app_folder_status
+cd $dir21
+else
+dir22=$(zenity --question --title="Change_Backend_Config Directory" --text=$dir2"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir23=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir23|g" /tmp/app_folder_status
+cd $dir23
+else
+cd $dir2
+fi
+fi
 file2=$(zenity --file-selection --title="Select Sever.js" 2> /dev/null)
 exit1
 server=$(echo $file2 | awk -F/ '{print $NF}')
@@ -119,18 +173,55 @@ zenity --title "Worng File Selected"  --error --text="Please Select server.js Fi
 server_js
 fi
 }
-###################################################################################################
+##################################################################################################
 Production_build()
 {
-directory1=$(zenity --file-selection --directory --title="Select Production Build directory" 2> /dev/null)
+dir_selection
+dir3=$(cat /tmp/app_folder_status | grep "Client_Production_Build:"| cut -d ':' -f2  )
+if [ -z $dir3 ]
+then
+dir31=$(zenity --title="Select path for Client_Production_Build" --file-selection --directory 2> /dev/null)
 exit1
-cd $directory1
+sed -i "s|Client_Production_Build:|Client_Production_Build:$dir31|g" /tmp/app_folder_status
+cd $dir21
+else
+dir32=$(zenity --question --title="Client_Production_Build Directory" --text=$dir3"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir33=$(zenity --title="Select path for Client_Production_Build" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Client_Production_Build:|Client_Production_Build:$dir33|g" /tmp/app_folder_status
+cd $dir33
+else
+cd $dir3
+fi
+fi
 gnome-terminal -x bash -ic 'node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --prod ; sleep 86400'
 Status[3]="Done"
 }
-###################################################################################################
+##################################################################################################
 app_yaml()
 {
+dir_selection
+dir4=$(cat /tmp/app_folder_status | grep "Change_Docker_Version:"| cut -d ':' -f2  )
+if [ -z $dir4 ]
+then
+dir41=$(zenity --title="Select path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Docker_Version:|Change_Docker_Version:$dir41|g" /tmp/app_folder_status
+cd $dir41
+else
+dir42=$(zenity --question --title="Change_Docker_Version Directory" --text=$dir4"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir43=$(zenity --title="Select path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Docker_Version:|Change_Docker_Version:$dir43|g" /tmp/app_folder_status
+cd $dir43
+else
+cd $dir4
+fi
+fi
 file3=$(zenity --file-selection --title="Select app.yaml" 2> /dev/null)
 exit1
 app=$(echo $file3 | awk -F/ '{print $NF}')
@@ -149,25 +240,43 @@ Status[4]="Done"
 fi
 fi
 }
-###########################################################################################################
+##########################################################################################################
 gulp_build()
 {
-directory2=$(zenity --file-selection --directory --title="Gulp Build Directory" 2> /dev/null)
+dir_selection
+dir5=$(cat /tmp/app_folder_status | grep "Gulp_Build:"| cut -d ':' -f2  )
+if [ -z $dir5 ]
+then
+dir51=$(zenity --title="Select path for Gulp_Build" --file-selection --directory 2> /dev/null)
 exit1
-cd $directory2
+sed -i "s|Gulp_Build:|Gulp_Build:$dir51|g" /tmp/app_folder_status
+cd $dir51
+else
+dir52=$(zenity --question --title="Gulp_Build Directory" --text=$dir5"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir53=$(zenity --title="Select path for Gulp_Build" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Gulp_Build:|Gulp_Build:$dir43|g" /tmp/app_folder_status
+cd $dir53
+else
+cd $dir5
+fi
+fi
 gnome-terminal -x bash -ic 'gulp build ; sleep 86400'
 Status[5]="Done"
 }
-###########################################################################################################
+##########################################################################################################
 git_push()
 {
-if [ -z $directory2 ]
+if [ -z $dir5 ]
 then
-directory3=$(zenity --file-selection --directory --title="Directory For Git Push" 2> /dev/null)
+dir6=$(zenity --file-selection --directory --title="Directory For Git Push" 2> /dev/null)
 exit1
-cd $directory3
+sed -i "s|Gulp_Push:|Gulp_Push:$dir6|g" /tmp/app_folder_status
+cd $dir6
 else
-cd $directory2
+cd $dir5
 fi
 git_in=$(zenity --forms --title="Git Push" --add-entry="Comment For Commit" --add-entry="Branch Name" 2> /dev/null)
 exit1
@@ -193,18 +302,35 @@ Status[6]="Done"
 fi
 fi
 }
-###########################################################################################################
+##########################################################################################################
 git_pull()
 {
-git_dir=$(zenity --file-selection --directory --title="Directory For Git_Push Pull" 2> /dev/null)
+dir_selection
+dir7=$(cat /tmp/app_folder_status | grep "Git_Pull:"| cut -d ':' -f2  )
+if [ -z $dir7 ]
+then
+dir71=$(zenity --title="Select path for Git_Pull" --file-selection --directory 2> /dev/null)
 exit1
-cd $git_dir 
+sed -i "s|Git_Pull:|Git_Pull:$dir71|g" /tmp/app_folder_status
+cd $dir71
+else
+dir72=$(zenity --question --title="Git_Pull Directory" --text=$dir7"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir73=$(zenity --title="Select path for Git_Pull" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Pull:|Git_Pull:$dir73|g" /tmp/app_folder_status
+cd $dir73
+else
+cd $dir7
+fi
+fi
 pull_branch=$(zenity --forms --title="Git Pull" --add-entry="Branch Name" 2> /dev/null)
 exit1
 gnome-terminal -x bash -ic "git pull origin $pull_branch; sleep 86400"
 Status[0]="Done"
 }
-###########################################################################################################
+##########################################################################################################
 all_done()
 {
 Done=()
@@ -219,7 +345,7 @@ Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
 fi
 }
 
-###########################################################################################################
+##########################################################################################################
 check_done_task()
 {
 if [ -s "/tmp/crm_done_task" ]
@@ -235,14 +361,14 @@ else
 Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
 fi
 }
-############################################################################################################
+###########################################################################################################
 check_done_task
 all_done
 while [ $? == "0" ]
 do
 Popup
 exit1
-###########################
+##########################
 if [ $option == "Change_forntend_config" ]
 then
 if [ ${Status[1]} == "Done" ]
@@ -258,7 +384,7 @@ else
 config_development
 fi
 fi
-############
+###########
 if [ $option == "Change_Backend_Config" ]
 then
 if [ ${Status[2]} == "Done" ]
@@ -274,7 +400,7 @@ else
 server_js
 fi
 fi
-###########
+##########
 if [ $option == "Client_Production_Build" ]
 then
 if [ ${Status[3]} == "Done" ]
@@ -290,7 +416,7 @@ else
 Production_build
 fi
 fi
-###########
+##########
 if [ $option == "Change_Docker_Version" ]
 then
 if [ ${Status[4]} == "Done" ]
@@ -306,7 +432,7 @@ else
 app_yaml
 fi
 fi
-##########
+#########
 if [ $option == "Gulp_Build" ]
 then
 if [ ${Status[5]} == "Done" ]
@@ -322,7 +448,7 @@ else
 gulp_build
 fi
 fi
-##########
+#########
 if [ $option == "Git_Push" ]
 then
 if [ ${Status[6]} == "Done" ]
@@ -353,6 +479,7 @@ git_pull
 fi
 fi
 done
+
 elif [ $1 == "uninstall" ]
 then
 if [ $(whoami) != "root" ]

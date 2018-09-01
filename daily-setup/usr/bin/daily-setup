@@ -1,0 +1,109 @@
+#!/bin/bash
+#if [ -s "/tmp/daily_folder_status" ]
+#then
+#i=0
+#dir=()
+#for x in $(cat /tmp/daily_folder_status)
+#do
+#dir[$i]=$x
+#i=`expr $i + 1`
+#done
+#else
+#dir=()
+#dir[0]=$(zenity --title="Select directory1" --file-selection)
+#dir[1]=$(zenity --title="Select directory1" --file-selection)
+#dir[2]=$(zenity --title="Select directory1" --file-selection)
+#dir[3]=$(zenity --title="Select directory1" --file-selection)
+#echo ${dir[@]} > /tmp/daily_folder_status
+#fi
+dir_selection()
+{
+if [ ! -s "/tmp/daily_folder_status" ]
+then
+echo "Client local build:$HOME" >> /tmp/daily_folder_status
+echo "client server:$HOME" >> /tmp/daily_folder_status
+echo "mysql server:$HOME" >> /tmp/daily_folder_status
+echo "server:$HOME" >> /tmp/daily_folder_status
+fi
+}
+dir_selection
+cat /tmp/daily_folder_status | zenity --text-info 2> /dev/null
+dir_set=$(zenity --question --text="Want to change default Folder's?" 2> /dev/null)
+if [ $? == "0" ]
+then 
+option1=$(zenity --list --title "For Default Directory Change" --checklist false  "client_local_build" false  "client_server" false  "mysql_server" false  "node_server" --column "Select" --column "Operation" 2> /dev/null)
+if [ ! -z $(echo $option1 | grep "client_local_build") ]
+then
+dir0=$(zenity --title="Select directory for client_local_build" --file-selection 2> /dev/null)
+sed -i "s|Client local build:|Client local build:$dir0|" /tmp/daily_folder_status
+fi
+if [ ! -z $(echo $option1 | grep "client_server") ]
+then
+dir1=$(zenity --title="Select directory for client_server" --file-selection 2> /dev/null)
+sed -i "s|client server:|client server:$dir1|" /tmp/daily_folder_status
+fi
+if [ ! -z $(echo $option1 | grep "mysql_server") ]
+then
+dir2=$(zenity --title="Select directory for mysql_server" --file-selection 2> /dev/null)
+sed -i "s|mysql server:|mysql server:$dir2|" /tmp/daily_folder_status
+fi
+if [ ! -z $(echo $option1 | grep "node_server") != "" ]
+then
+dir3=$(zenity --title="Select directory for node_server" --file-selection 2> /dev/null)
+sed -i "s|server:|server:$dir3|" /tmp/daily_folder_status
+fi
+fi
+cd $(cat /tmp/daily_folder_status | grep -i "Client local build"|cut -d ":" -f2 )
+cd $(cat /tmp/daily_folder_status | grep -i "client server"|cut -d ":" -f2 )
+cd $(cat /tmp/daily_folder_status | grep -i "mysql server"|cut -d ":" -f2 )
+cd $(cat /tmp/daily_folder_status | grep -i "server"|cut -d ":" -f2 )
+cmd1="ng build --watch"
+cmd2="node server.js"
+cmd3="docker start mysqlcont; docker start myadmin; docker ps"
+cmd4="node app.js"
+option=$(zenity --list --checklist false "1" "client local build" false "2" "Start client server" false "3" "Start mysql server" false "4" "Start server" --column "Select" --column "no" --column "Operation" 2> /dev/null)
+case $option in 
+	1)
+	gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" 
+	;;
+	2)
+	gnome-terminal --tab --command="bash -c '$cmd2; sleep 100'"
+	;;
+	3)
+	gnome-terminal --tab --command="bash -c '$cmd3; sleep 100'" 
+	;;
+	4)	
+	gnome-terminal --tab --command="bash -c '$cmd3; sleep 100'" 
+	;;
+	"1|2")
+	 gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" --tab --command="bash -c '$cmd2; sleep 100'"
+	;;
+	"1|3")
+	gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" --tab --command="bash -c '$cmd3; sleep 100'"
+        ;;
+	"1|4")
+         gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+        ;;
+	"2|3")
+         gnome-terminal --tab --command="bash -c '$cmd2; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+        ;;
+	"2|4")
+         gnome-terminal --tab --command="bash -c '$cmd2; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+        ;;
+	"3|4")
+         gnome-terminal --tab --command="bash -c '$cmd3; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+        ;;
+	"1|2|3")
+         gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" --tab --command="bash -c '$cmd2; sleep 100'" --tab --command="bash -c '$cmd3; sleep 100'"
+        ;;
+	"1|3|4")
+         gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" --tab --command="bash -c '$cmd3; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+        ;;
+	"2|3|4")
+         gnome-terminal --tab --command="bash -c '$cmd2; sleep 100'" --tab --command="bash -c '$cmd3; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+        ;;
+        "1|2|3|4")
+	gnome-terminal --tab --command="bash -c '$cmd1; sleep 100'" --tab --command="bash -c '$cmd2; sleep 100'" --tab --command="bash -c '$cmd3; sleep 100'" --tab --command="bash -c '$cmd4; sleep 100'"
+	;;
+esac
+

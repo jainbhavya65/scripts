@@ -1,0 +1,6 @@
+if [ -z $x ]
+then 
+echo hello
+else 
+bhavya
+fi

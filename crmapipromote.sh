@@ -20,12 +20,6 @@ exit1()
 if [ $? == "1" ]
 then
 echo ${Status[@]} > /tmp/api_done_task
-dir_temp=()
-for x in {0..3}
-do
-dir_temp[$x]="dir[$x]$"${dir[$x]} 
-done
-echo ${dir_temp[@]} > /tmp/api_folder_status
 exit 1
 fi
 }
@@ -44,80 +38,35 @@ exit1
 ##################################################################################################
 dir_selection()
 {
-if [ -s "/tmp/api_folder_status" ]
+if [ ! -s "/tmp/api_folder_status" ]
 then
-i=0
-dir=()
-for x in $(cat /tmp/api_folder_status)
-do
-y=$(echo $x |cut -d '$' -f2)
-if [ -z $y ]
-then
-dir[$i]=$HOME
-else
-dir[$i]=$y
-fi
-i=`expr $i + 1`
-done
-if [ $option == "Git_Pull" ]
-then
-zenity --question --title "Path for Git_Pull" --text=${dir[0]}" \n Want to change Are you sure?" --cancel-label="Browse" 2> /dev/null
-if [ $? == "1" ]
-then
-dir[0]=$(zenity --title="Select Path for Git_Pull" --file-selection --directory 2> /dev/null)
-exit1
-fi
-fi
-if [ $option == "Change_Backend_Config" ]
-then
-zenity --question --title "Path for Change_Backend_Config" --text=${dir[1]}" \n Want to change Are you sure?" --cancel-label="Browse" 2> /dev/null
-if [ $? == "1" ]
-then
-dir[1]=$(zenity --title="Select Path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
-exit1
-fi
-fi
-if [ $option == "Change_Docker_Version" ]
-then
-zenity --question --title "Path for Change_Docker_Version" --text=${dir[2]}" \n Want to change Are you sure?" --cancel-label="Browse" 2> /dev/null
-if [ $? == "1" ]
-then
-dir[2]=$(zenity --title="Select Path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
-exit1
-fi
-fi
-if [ $option == "Git_Push" ]
-then
-zenity --question --title "Path for Git_Push" --text=${dir[3]}" \n Want to change Are you sure?" --cancel-label="Browse" 2> /dev/null
-if [ $? == "1" ]
-then
-dir[3]=$(zenity --title="Select Path for Git_Push" --file-selection --directory 2> /dev/null)
-exit1
-fi
-fi
-else
-dir=($HOME $HOME $HOME $HOME)
-case $option in
-"Git_Pull")
-dir[0]=$(zenity --title="Select Path for Git_Pull" --file-selection --directory 2> /dev/null)
-exit1 ;;
-"Change_Backend_Config")
-dir[1]=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
-exit1 ;;
-"Change_Docker_Version")
-dir[2]=$(zenity --title="Select Path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
-exit1 ;;
-"Git_Push")
-dir[3]=$(zenity --title="Select Path for Git_Push" --file-selection --file-selection --directory 2> /dev/null)
-exit1 ;;
-esac
+echo "Git_Pull:" >> /tmp/api_folder_status
+echo "Change_Backend_Config:" >> /tmp/api_folder_status
+echo "Change_Docker_Version:" >> /tmp/api_folder_status
+echo "Git_Push:" >> /tmp/api_folder_status
 fi
 }
 ##################################################################################################
 app_js()
 {
 dir_selection
-cd ${dir[1]}
+dir1=$(cat /tmp/api_folder_status | grep "Change_Backend_Config:"| cut -d ':' -f2  )
+if [ -z $dir1 ]
+then
+dir11=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir11|g" /tmp/api_folder_status
+cd $dir11
+else
+dir12=$(zenity --question --title="Change_Backend_Config Directory" --text=$dir1"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir13=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir13|g" /tmp/api_folder_status
+fi
+cd $dir1
+fi
 file2=$(zenity --file-selection --title="Select app.js" 2> /dev/null)
 exit1
 server=$(echo $file2 | awk -F/ '{print $NF}')
@@ -144,7 +93,23 @@ fi
 app_yaml()
 {
 dir_selection
-cd ${dir[2]}
+dir2=$(cat /tmp/api_folder_status | grep "Change_Docker_Version:"| cut -d ':' -f2  )
+if [ -z $dir2 ]
+then
+dir21=$(zenity --title="Select path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Docker_Version:|Change_Docker_Version:$dir21|g" /tmp/api_folder_status
+cd $dir21
+else
+dir22=$(zenity --question --title="Change_Docker_Version Directory" --text=$dir2"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir23=$(zenity --title="Select path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Change_Docker_Version:|Change_Docker_Version:$dir23|g" /tmp/api_folder_status
+fi
+cd $dir2
+fi
 file3=$(zenity --file-selection --title="Select app.yaml" 2> /dev/null)
 exit1
 app=$(echo $file3 | awk -F/ '{print $NF}')
@@ -167,7 +132,23 @@ fi
 git_push()
 {
 dir_selection
-cd ${dir[3]}
+dir3=$(cat /tmp/api_folder_status | grep "Git_Push:"| cut -d ':' -f2  )
+if [ -z $dir3 ]
+then
+dir31=$(zenity --title="Select path for Git_Push" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Push:|Git_Push:$dir31|g" /tmp/api_folder_status
+cd $dir31
+else
+dir32=$(zenity --question --title="Git Push Directory" --text=$dir3"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir33=$(zenity --title="Select path for Git_Push" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Push:|Git_Push:$dir33|g" /tmp/api_folder_status
+fi
+cd $dir3
+fi
 git_in=$(zenity --forms --title="Git" --add-entry="Comment For Commit" --add-entry="Branch Name" 2> /dev/null)
 exit1
 IFS="|" read -r comment branch  <<< "$git_in"
@@ -196,7 +177,23 @@ fi
 git_pull()
 {
 dir_selection
-cd ${dir[0]}
+dir4=$(cat /tmp/api_folder_status | grep "Git_Pull:"| cut -d ':' -f2  )
+if [ -z $dir4 ]
+then
+dir41=$(zenity --title="Select path for Git_Pull" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Pull:|Git_Pull:$dir41|g" /tmp/api_folder_status
+cd $dir41
+else
+dir42=$(zenity --question --title="Git Pull Directory" --text=$dir4"\n Do you want to change?" --ok-label="Browse" 2> /dev/null)
+if [ $? == "0" ]
+then
+dir43=$(zenity --title="Select path for Git_Push" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Push:|Git_Push:$dir43|g" /tmp/api_folder_status
+fi
+cd $dir4
+fi
 pull_branch=$(zenity --forms --title="Git Pull" --add-entry="Branch Name" 2> /dev/null)
 exit1
 gnome-terminal -x bash -c 'git pull origin $pull_branch ; sleep 1000'
@@ -306,4 +303,3 @@ fi
 fi
 fi
 done
-
