@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=crm-api-promote start
+Name=CRM_api_Promote
+Comment=CRM_api_Promote
+Icon=/usr/local/src/crmapipromote/API-promote.png
