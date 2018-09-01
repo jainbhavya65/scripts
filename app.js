@@ -10,8 +10,8 @@ var port_no = '';
 
 
 //for production use 'production', for development use 'development'
-process.env.NODE_ENV = 'production';
-//process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = 'development';
+//process.env.NODE_ENV = 'development';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }))
