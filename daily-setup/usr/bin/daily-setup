@@ -1,21 +1,4 @@
 #!/bin/bash
-#if [ -s "/tmp/daily_folder_status" ]
-#then
-#i=0
-#dir=()
-#for x in $(cat /tmp/daily_folder_status)
-#do
-#dir[$i]=$x
-#i=`expr $i + 1`
-#done
-#else
-#dir=()
-#dir[0]=$(zenity --title="Select directory1" --file-selection)
-#dir[1]=$(zenity --title="Select directory1" --file-selection)
-#dir[2]=$(zenity --title="Select directory1" --file-selection)
-#dir[3]=$(zenity --title="Select directory1" --file-selection)
-#echo ${dir[@]} > /tmp/daily_folder_status
-#fi
 dir_selection()
 {
 if [ ! -s "/tmp/daily_folder_status" ]
@@ -27,7 +10,6 @@ echo "server:$HOME" >> /tmp/daily_folder_status
 fi
 }
 dir_selection
-cat /tmp/daily_folder_status | zenity --text-info 2> /dev/null
 dir_set=$(zenity --question --text="Want to change default Folder's?" 2> /dev/null)
 if [ $? == "0" ]
 then 

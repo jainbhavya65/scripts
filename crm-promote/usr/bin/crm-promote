@@ -229,7 +229,8 @@ if [ -z $dir5 ]
 then
 dir6=$(zenity --file-selection --directory --title="Directory For Git Push" 2> /dev/null)
 exit1
-sed -i "s|Gulp_Push:|Gulp_Push:$dir6|g" /tmp/app_folder_status
+dir61=$(cat /tmp/app_folder_status | grep -i Git_Push | cut -d ":" -f2)
+sed -i "s|Git_Push:$dir61|Git_Push:$dir6|g" /tmp/app_folder_status
 cd $dir6
 else
 cd $dir5
@@ -280,7 +281,8 @@ Status[0]="Done"
 ##########################################################################################################
 settings()
 {
-selc_dir=$(zenity --list --title "Settings" --title "Select feild for change default Directory" --column "Select" "Git_Pull" "Change_forntend_config" "Change_Backend_Config" "Client_Production_Build" "Change_Docker_Version" "Gulp_Build" "Git_Push" 2> /dev/null)
+selc_dir=$(zenity --list --title "Settings" --text "Select field for change default Directory" --column "Select" "Git_Pull" "Change_forntend_config" "Change_Backend_Config" "Client_Production_Build" "Change_Docker_Version" "Gulp_Build" --width $W --height $H 2> /dev/null)
+exit1
 if [ $selc_dir == "Git_Pull" ]
 then
 Pull_dir=$(zenity --file-selection --directory --title "Git_Pull Default Directory" 2> /dev/null)
@@ -322,13 +324,6 @@ gulp_dir=$(zenity --file-selection --directory --title "Gulp_Build Default Direc
 exit1
 dir47=$(cat /tmp/api_folder_status | grep -i Gulp_Build| cut -d ":" -f2)
 sed -i "s|Change_Docker_Version:$47|Change_Docker_Version:$gulp_dir|g" /tmp/app_folder_status
-fi
-if [ $selc_dir == "Git_Push" ]
-then
-push_dir=$(zenity --file-selection --directory --title "Git_Push Default Directory" 2> /dev/null)
-exit1
-dir48=$(cat /tmp/api_folder_status | grep -i Git_Push| cut -d ":" -f2)
-sed -i "s|Git_Push:$48|Git_Push:$push_dir|g" /tmp/app_folder_status
 fi
 }
 ##########################################################################################################
