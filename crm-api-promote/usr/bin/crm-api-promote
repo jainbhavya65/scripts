@@ -84,7 +84,7 @@ if [ -z $dir1 ]
 then
 dir11=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
 exit1
-sed -i "s|Git_Pull:|Git_Pull:$dir11|g" /tmp/api_folder_status
+sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir11|g" /tmp/api_folder_status
 cd $dir11
 else
 cd $dir1
@@ -176,7 +176,7 @@ if [[ -z $username  ]] || [[ -z $password ]]
 then
 zenity --error --text="Please Enter Username and Password" 2> /dev/null
 else
-gnome-terminal -x bash -c 'git push https://$username:$password@github.com/jainbhavya65/scripts.git $branch ; sleep 1000'
+gnome-terminal -x bash -c 'git push https://$username:$password@github.com/iface1/iface-crm-api.git $branch ; sleep 1000'
 Status[3]="Done"
 fi
 fi

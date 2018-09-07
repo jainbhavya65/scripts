@@ -116,7 +116,7 @@ gnome-terminal -x bash -ic "cat $file1 && sleep 5"
 Status[1]="Done"
 fi
 else
-zenity --title "Worng File Selected"  --error --text="Please Select Change_forntend_config File" 2> /dev/null
+zenity --title "Worng File Selected"  --error --text="Please Select config.development.ts File" 2> /dev/null
 config_development
 fi
 }
@@ -287,42 +287,43 @@ if [ $selc_dir == "Git_Pull" ]
 then
 Pull_dir=$(zenity --file-selection --directory --title "Git_Pull Default Directory" 2> /dev/null)
 exit1
-dir42=$(cat /tmp/api_folder_status | grep -i Git_pull| cut -d ":" -f2)
+dir42=$(cat /tmp/app_folder_status | grep -i Git_pull| cut -d ":" -f2)
+
 sed -i "s|Git_Pull:$dir42|Git_Pull:$Pull_dir|g" /tmp/app_folder_status
 fi
 if [ $selc_dir == "Change_forntend_config" ]
 then
 fornt_dir=$(zenity --file-selection --directory --title "Change_forntend_config Default Directory" 2> /dev/null)
 exit1 
-dir43=$(cat /tmp/api_folder_status | grep -i Change_forntend_config| cut -d ":" -f2)
+dir43=$(cat /tmp/app_folder_status | grep -i Change_forntend_config| cut -d ":" -f2)
 sed -i "s|Git_Pull:$dir43|Git_Pull:$front_dir|g" /tmp/app_folder_status
 fi
 if [ $selc_dir == "Change_Backend_Config" ]
 then
 backend_dir=$(zenity --file-selection --directory --title "Git_Pull Default Directory" 2> /dev/null)
 exit1
-dir44=$(cat /tmp/api_folder_status | grep -i Change_Backend_Config| cut -d ":" -f2)
+dir44=$(cat /tmp/app_folder_status | grep -i Change_Backend_Config| cut -d ":" -f2)
 sed -i "s|Change_Backend_Config:$dir44|Change_Backend_Config:$backend_dir|g" /tmp/app_folder_status
 fi
 if [ $selc_dir == "Client_Production_Build" ]
 then
 prod_dir=$(zenity --file-selection --directory --title "Client_Production_Build Default Directory" 2> /dev/null)
 exit1 
-dir45=$(cat /tmp/api_folder_status | grep -i Client_Production_Build | cut -d ":" -f2)
+dir45=$(cat /tmp/app_folder_status | grep -i Client_Production_Build | cut -d ":" -f2)
 sed -i "s|Client_Production_Build:$dir45|Client_Production_Build:$prod_dir|g" /tmp/app_folder_status
 fi
 if [ $selc_dir == "Change_Docker_Version" ]
 then
 docker_dir=$(zenity --file-selection --directory --title "Change_Docker_Version Default Directory" 2> /dev/null)
 exit1
-dir46=$(cat /tmp/api_folder_status | grep -i Change_Docker_Version| cut -d ":" -f2)
+dir46=$(cat /tmp/app_folder_status | grep -i Change_Docker_Version| cut -d ":" -f2)
 sed -i "s|Change_Docker_Version:$dir46|Change_Docker_Version:$docker_dir|g" /tmp/app_folder_status
 fi
 if [ $selc_dir == "Gulp_Build" ]
 then
 gulp_dir=$(zenity --file-selection --directory --title "Gulp_Build Default Directory" 2> /dev/null)
 exit1
-dir47=$(cat /tmp/api_folder_status | grep -i Gulp_Build| cut -d ":" -f2)
+dir47=$(cat /tmp/app_folder_status | grep -i Gulp_Build| cut -d ":" -f2)
 sed -i "s|Change_Docker_Version:$dir47|Change_Docker_Version:$gulp_dir|g" /tmp/app_folder_status
 fi
 }

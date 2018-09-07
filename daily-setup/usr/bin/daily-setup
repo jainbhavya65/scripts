@@ -40,27 +40,27 @@ cmd3="docker start mysqlcont; docker start myadmin; docker ps"
 cmd4="node app.js"
 while [ $? == "0" ]
 do
-option=$(zenity --list --checklist false "1" "client local build" "$(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 )" false "2" "Start crm server" "$(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 )" false "3" "Start mysql server" " " false "4" "Start api server" "$(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 )" false "5" "Settings" " "  --column "Select" --column "No." --column "Operation" --column "Directory" --width $W --height $H 2> /dev/null)
+option=$(zenity --list --checklist false "1" "ng build" "$(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 )" false "2" "Start crm server" "$(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 )" false "3" "Start mysql server" " " false "4" "Start api server" "$(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 )" false "5" "Settings" " "  --column "Select" --column "No." --column "Operation" --column "Directory" --width $W --height $H 2> /dev/null)
 exit1
 if [ $option == "5" ]
 then
-option1=$(zenity --list --title "For Default Directory Change"  "client_local_build"  "crm_client_server" "node_api_server" --column "Operation" --width $W --height $H 2> /dev/null)
+option1=$(zenity --list --title "For Default Directory Change"  "ng_build"  "crm_server" "node_api_server" --column "Operation" --width $W --height $H 2> /dev/null)
 exit1
-if [ $option1 ==  "client_local_build" ]
+if [ $option1 ==  "ng_build" ]
 then
-dir0=$(zenity --title="Select directory for client_local_build" --file-selection --directory 2> /dev/null)
+dir0=$(zenity --title="Select directory for ng_build" --file-selection --directory 2> /dev/null)
 exit1
 dir00=$(cat /tmp/daily_folder_status | grep -i "Client local build" | cut -d ':' -f2 )
 sed -i "s|Client local build:$dir00|Client local build:$dir0|" /tmp/daily_folder_status
 fi
-if [ $option1 == "crm_client_server" ]
+if [ $option1 == "crm_server" ]
 then
 dir1=$(zenity --title="Select directory for client_server" --file-selection --directory 2> /dev/null)
 exit1
 dir10=$(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ':' -f2 )
 sed -i "s|client server:$dir10|client server:$dir1|" /tmp/daily_folder_status
 fi
-if [ $option1 == "api_node_server" ]
+if [ $option1 == "node_api_server" ]
 then
 dir3=$(zenity --title="Select directory for node_server" --file-selection --directory 2> /dev/null)
 exit1
@@ -68,52 +68,49 @@ dir30=$(cat /tmp/daily_folder_status | grep -i "node_server" | cut -d ':' -f2 )
 sed -i "s|node_server:$dir30|node_server:$dir3|" /tmp/daily_folder_status
 fi
 fi
-cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 )
-cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 )
-cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 )
 
 case $option in 
 	1)
-	gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" 
+	gnome-terminal --tab --profile hold --command="bash -c ' cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ); $cmd1; $SHELL'" 
 	;;
 	2)
-	gnome-terminal --tab --command="bash -c '$cmd2; $SHELL'"
+	gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 );$cmd2; $SHELL'"
 	;;
 	3)
-	gnome-terminal --tab --command="bash -c '$cmd3; $SHELL'" 
+	gnome-terminal --tab  --command="bash -c '$cmd3; $SHELL'" 
 	;;
 	4)	
-	gnome-terminal --tab --command="bash -c '$cmd4; $SHELL'" 
+	gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'" 
 	;;
 	"1|2")
-	 gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" --tab --command="bash -c '$cmd2; $SHELL'"
+	 gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ) ;$cmd1; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 );$cmd2; $SHELL'"
 	;;
 	"1|3")
-	gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'"
+	gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ) ; $cmd1; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'"
         ;;
 	"1|4")
-         gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" --tab --command="bash -c '$cmd4; $SHELL'"
+         gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ) ;$cmd1; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'"
         ;;
 	"2|3")
-         gnome-terminal --tab --command="bash -c '$cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'"
+         gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 ); $cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'"
         ;;
 	"2|4")
-         gnome-terminal --tab --command="bash -c '$cmd2; $SHELL'" --tab --command="bash -c '$cmd4; $SHELL'"
+         gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 ) ;$cmd2; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'"
         ;;
 	"3|4")
-         gnome-terminal --tab --command="bash -c '$cmd3; $SHELL'" --tab --command="bash -c '$cmd4; $SHELL'"
+         gnome-terminal --tab --command="bash -c '$cmd3; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'"
         ;;
 	"1|2|3")
-         gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" --tab --command="bash -c '$cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'"
+         gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ); $cmd1; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 ) ;$cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'"
         ;;
 	"1|3|4")
-         gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'" --tab --command="bash -c '$cmd4; $SHELL'"
+         gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ); $cmd1; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'"
         ;;
 	"2|3|4")
-         gnome-terminal --tab --command="bash -c '$cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'" --tab --command="bash -c '$cmd4; $SHELL'"
+         gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 ) ;$cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'"
         ;;
         "1|2|3|4")
-	gnome-terminal --tab --command="bash -c '$cmd1; $SHELL'" --tab --command="bash -c '$cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'" --tab --command="bash -c '$cmd4; $SHELL'"
+	gnome-terminal --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i 'Client local build' | cut -d ':' -f2 ) ; $cmd1; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "client server" | cut -d ":" -f2 ); $cmd2; $SHELL'" --tab --command="bash -c '$cmd3; $SHELL'" --tab --profile hold --command="bash -c 'cd $(cat /tmp/daily_folder_status | grep -i "node_server:" | cut -d ":" -f2 ) ;$cmd4; $SHELL'"
 	;;
 esac
 done

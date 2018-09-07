@@ -1,0 +1,2 @@
+#!/bin/bash
+cat .git/config | grep -i url | cut -d "=" -f2
