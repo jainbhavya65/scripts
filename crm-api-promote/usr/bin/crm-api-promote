@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ -z $1 ]
 then
-echo "Usage: crm-api-promote OBJECT"
+echo "Usage: crm-api-promote OBJECT/usr/local/src/usr/local/src"
 echo "where  OBJECT := { install | start | uninstall }"
 echo "install: For install desktop icon"
 echo "start: Use app by CLI"
@@ -61,30 +61,30 @@ exit1
 ##################################################################################################
 Popup()
 {
-option=$( zenity --list --column "Select Process" --column "Status" --column "Diectory"  "Git_Pull" "${Status[0]}" "$(cat /tmp/api_folder_status | grep -i Git_Pull | cut -d ":" -f2)"  "Change_Backend_Config" "${Status[1]}" "$(cat /tmp/api_folder_status | grep -i Change_Backend_Config |  cut -d ":" -f2)" "Change_Docker_Version" "${Status[2]}" "$(cat /tmp/api_folder_status | grep -i Change_Docker_Version |  cut -d ":" -f2)"  "Git_Push" "${Status[3]}" "$(cat /tmp/api_folder_status | grep -i Git_Push |  cut -d ":" -f2)" "Settings" --width=$W --height=$H 2> /dev/null)
+option=$( zenity --list --column "Select Process" --column "Status" --column "Diectory"  "Git_Pull" "${Status[0]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Pull | cut -d ":" -f2)"  "Change_Backend_Config" "${Status[1]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Backend_Config |  cut -d ":" -f2)" "Change_Docker_Version" "${Status[2]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Docker_Version |  cut -d ":" -f2)"  "Git_Push" "${Status[3]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Push |  cut -d ":" -f2)" "Settings" --width=$W --height=$H 2> /dev/null)
 exit1
 }
 ##################################################################################################
 dir_selection()
 {
-if [ ! -s "/tmp/api_folder_status" ]
+if [ ! -s "/usr/local/src/crmapipromote/api_folder_status" ]
 then
-echo "Git_Pull:" >> /tmp/api_folder_status
-echo "Change_Backend_Config:" >> /tmp/api_folder_status
-echo "Change_Docker_Version:" >> /tmp/api_folder_status
-echo "Git_Push:" >> /tmp/api_folder_status
+echo "Git_Pull:" >> /usr/local/src/crmapipromote/api_folder_status
+echo "Change_Backend_Config:" >> /usr/local/src/crmapipromote/api_folder_status
+echo "Change_Docker_Version:" >> /usr/local/src/crmapipromote/api_folder_status
+echo "Git_Push:" >> /usr/local/src/crmapipromote/api_folder_status
 fi
 }
 ##################################################################################################
 app_js()
 {
 dir_selection
-dir1=$(cat /tmp/api_folder_status | grep "Change_Backend_Config:"| cut -d ':' -f2  )
+dir1=$(cat /usr/local/src/crmapipromote/api_folder_status | grep "Change_Backend_Config:"| cut -d ':' -f2  )
 if [ -z $dir1 ]
 then
 dir11=$(zenity --title="Select path for Change_Backend_Config" --file-selection --directory 2> /dev/null)
 exit1
-sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir11|g" /tmp/api_folder_status
+sed -i "s|Change_Backend_Config:|Change_Backend_Config:$dir11|g" /usr/local/src/crmapipromote/api_folder_status
 cd $dir11
 else
 cd $dir1
@@ -115,12 +115,12 @@ fi
 app_yaml()
 {
 dir_selection
-dir2=$(cat /tmp/api_folder_status | grep "Change_Docker_Version:"| cut -d ':' -f2  )
+dir2=$(cat /usr/local/src/crmapipromote/api_folder_status | grep "Change_Docker_Version:"| cut -d ':' -f2  )
 if [ -z $dir2 ]
 then
 dir21=$(zenity --title="Select path for Change_Docker_Version" --file-selection --directory 2> /dev/null)
 exit1
-sed -i "s|Change_Docker_Version:|Change_Docker_Version:$dir21|g" /tmp/api_folder_status
+sed -i "s|Change_Docker_Version:|Change_Docker_Version:$dir21|g" /usr/local/src/crmapipromote/api_folder_status
 cd $dir21
 else
 cd $dir2
@@ -147,12 +147,12 @@ fi
 git_push()
 {
 dir_selection
-dir3=$(cat /tmp/api_folder_status | grep "Git_Push:"| cut -d ':' -f2  )
+dir3=$(cat /usr/local/src/crmapipromote/api_folder_status | grep "Git_Push:"| cut -d ':' -f2  )
 if [ -z $dir3 ]
 then
 dir31=$(zenity --title="Select path for Git_Push" --file-selection --directory 2> /dev/null)
 exit1
-sed -i "s|Git_Push:|Git_Push:$dir31|g" /tmp/api_folder_status
+sed -i "s|Git_Push:|Git_Push:$dir31|g" /usr/local/src/crmapipromote/api_folder_status
 cd $dir31
 else
 cd $dir3
@@ -185,12 +185,12 @@ fi
 git_pull()
 {
 dir_selection
-dir4=$(cat /tmp/api_folder_status | grep "Git_Pull:"| cut -d ':' -f2  )
+dir4=$(cat /usr/local/src/crmapipromote/api_folder_status | grep "Git_Pull:"| cut -d ':' -f2  )
 if [ -z $dir4 ]
 then
 dir41=$(zenity --title="Select path for Git_Pull" --file-selection --directory 2> /dev/null)
 exit1
-sed -i "s|Git_Pull:|Git_Pull:$dir41|g" /tmp/api_folder_status
+sed -i "s|Git_Pull:|Git_Pull:$dir41|g" /usr/local/src/crmapipromote/api_folder_status
 cd $dir41
 else
 cd $dir4
@@ -207,30 +207,30 @@ selc_dir=$(zenity --list --title "Settings" --column "Select feild for change de
 if [ $selc_dir == "Git_Pull" ]
 then
 Pull_dir=$(zenity --file-selection --directory --title "Git_Pull Default Directory" 2> /dev/null)
-dir42=$(cat /tmp/api_folder_status | grep -i Git_pull| cut -d ":" -f2) 
+dir42=$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_pull| cut -d ":" -f2) 
 exit1
-sed -i "s|Git_Pull:$dir42|Git_Pull:$Pull_dir|g" /tmp/api_folder_status
+sed -i "s|Git_Pull:$dir42|Git_Pull:$Pull_dir|g" /usr/local/src/crmapipromote/api_folder_status
 fi
 if [ $selc_dir == "Change_Backend_Config" ]
 then
 backend_dir=$(zenity --file-selection --directory --title "Git_Pull Default Directory" 2> /dev/null)
-dir44=$(cat /tmp/api_folder_status | grep -i Change_Backend_Config| cut -d ":" -f2)
+dir44=$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Backend_Config| cut -d ":" -f2)
 exit1
-sed -i "s|Change_Backend_Config:$dir44|Change_Backend_Config:$backend_dir|g" /tmp/api_folder_status
+sed -i "s|Change_Backend_Config:$dir44|Change_Backend_Config:$backend_dir|g" /usr/local/src/crmapipromote/api_folder_status
 fi
 if [ $selc_dir == "Change_Docker_Version" ]
 then
 docker_dir=$(zenity --file-selection --directory --title "Change_Docker_Version Default Directory" 2> /dev/null)
-dir46=$(cat /tmp/api_folder_status | grep -i Change_Docker_Version| cut -d ":" -f2)
+dir46=$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Docker_Version| cut -d ":" -f2)
 exit1
-sed -i "s|Change_Docker_Version:$dir46|Change_Docker_Version:$docker_dir|g" /tmp/api_folder_status
+sed -i "s|Change_Docker_Version:$dir46|Change_Docker_Version:$docker_dir|g" /usr/local/src/crmapipromote/api_folder_status
 fi
 if [ $selc_dir == "Git_Push" ]
 then
 push_dir=$(zenity --file-selection --directory --title "Git_Push Default Directory" 2> /dev/null)
-dir48=$(cat /tmp/api_folder_status | grep -i Git_Push| cut -d ":" -f2)
+dir48=$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Push| cut -d ":" -f2)
 exit1
-sed -i "s|Git_Push:$dir48|Git_Push:$push_dir|g" /tmp/api_folder_status
+sed -i "s|Git_Push:$dir48|Git_Push:$push_dir|g" /usr/local/src/crmapipromote/api_folder_status
 fi
 }
 
