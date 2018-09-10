@@ -49,7 +49,7 @@ exit1()
 if [ $? == "1" ]
 then
 done_task=()
-for i in {0..6}
+for i in {0..7}
 do
 done_task[$i]=${Status[$i]}
 done
@@ -75,12 +75,13 @@ echo "Client_Production_Build:" >> /usr/local/src/crmpromote/app_folder_status
 echo "Change_Docker_Version:" >> /usr/local/src/crmpromote/app_folder_status
 echo "Gulp_Build:" >> /usr/local/src/crmpromote/app_folder_status
 echo "Git_Push:" >> /usr/local/src/crmpromote/app_folder_status
+echo "Git_Merge:" >> /usr/local/src/crmpromote/app_folder_status
 fi
 }
 #################################################################################################
 Popup()
 {
-option=$( zenity --list --column "Select Process" --column "Status" --column "Directory" "Git_Pull" "${Status[0]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Git_Pull | cut -d ":" -f2)"  "Change_forntend_config" "${Status[1]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Change_forntend_config | cut -d ":" -f2)" "Change_Backend_Config" "${Status[2]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Change_Backend_Config | cut -d ":" -f2)"  "Client_Production_Build" "${Status[3]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Client_Production_Build | cut -d ":" -f2)" "Change_Docker_Version" "${Status[4]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Change_Docker_Version | cut -d ":" -f2)" "Gulp_Build" "${Status[5]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Gulp_Build | cut -d ":" -f2)" "Git_Push" "${Status[6]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Git_Push | cut -d ":" -f2)" "Settings" --width=$W --height=$H 2> /dev/null)
+option=$( zenity --list --column "Select Process" --column "Status" --column "Directory" "Git_Pull" "${Status[0]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Git_Pull | cut -d ":" -f2)"  "Change_forntend_config" "${Status[1]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Change_forntend_config | cut -d ":" -f2)" "Change_Backend_Config" "${Status[2]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Change_Backend_Config | cut -d ":" -f2)"  "Client_Production_Build" "${Status[3]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Client_Production_Build | cut -d ":" -f2)" "Change_Docker_Version" "${Status[4]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Change_Docker_Version | cut -d ":" -f2)" "Gulp_Build" "${Status[5]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Gulp_Build | cut -d ":" -f2)" "Git_Push" "${Status[6]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Git_Push | cut -d ":" -f2)" "Git_Merge" "${Status[7]}" "$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Git_Merge | cut -d ":" -f2)" "Settings" --width=$W --height=$H 2> /dev/null)
 exit1
 }
 #################################################################################################
@@ -281,7 +282,7 @@ Status[0]="Done"
 ##########################################################################################################
 settings()
 {
-selc_dir=$(zenity --list --title "Settings" --text "Select field for change default Directory" --column "Select" "Git_Pull" "Change_forntend_config" "Change_Backend_Config" "Client_Production_Build" "Change_Docker_Version" "Gulp_Build" --width $W --height $H 2> /dev/null)
+selc_dir=$(zenity --list --title "Settings" --text "Select field for change default Directory" --column "Select" "Git_Pull" "Change_forntend_config" "Change_Backend_Config" "Client_Production_Build" "Change_Docker_Version" "Gulp_Build" "Git_Merge" --width $W --height $H 2> /dev/null)
 exit1
 if [ $selc_dir == "Git_Pull" ]
 then
@@ -326,19 +327,26 @@ exit1
 dir47=$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Gulp_Build| cut -d ":" -f2)
 sed -i "s|Change_Docker_Version:$dir47|Change_Docker_Version:$gulp_dir|g" /usr/local/src/crmpromote/app_folder_status
 fi
+if [ $selc_dir == "Git_Merge" ]
+then
+Merge_dir=$(zenity --file-selection --directory --title "Git_Merge Default Directory" 2> /dev/null)
+exit1
+dir48=$(cat /usr/local/src/crmpromote/app_folder_status | grep -i Git_Merge| cut -d ":" -f2)
+sed -i "s|Git_Merge:$dir48|Git_Merge:$Merge_dir|g" /usr/local/src/crmpromote/app_folder_status
+fi
 }
 ##########################################################################################################
 all_done()
 {
 Done=()
-for i in {0..6}
+for i in {0..7}
 do
 Done[$i]=Done
 done
 diff=$(diff <(printf "%s\n" "${Status[@]}") <(printf "%s\n" "${Done[@]}"))
 if [[ -z "$diff" ]]
 then
-Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
+Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
 fi
 }
 
@@ -355,8 +363,30 @@ Status[$i]=$x
 i=`expr $i + 1`
 done
 else
-Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
+Status=(Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done Not_Done)
 fi
+}
+############################################################################################################
+git_merge()
+{
+dir_selection
+dir9=$(cat /usr/local/src/crmpromote/app_folder_status | grep "Git_Merge:"| cut -d ':' -f2  )
+if [ -z $dir9 ]
+then
+dir91=$(zenity --title="Select path for Git_Merge" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Merge:|Git_Merge:$dir91|g" /usr/local/src/crmpromote/app_folder_status
+cd $dir91
+else
+cd $dir9
+fi
+branch_checkout=$(zenity --forms --title="Git Merge" --add-entry="Checkout Branch Name" 2> /dev/null)
+exit1
+gnome-terminal -x bash -c "git checkout $branch_checkout ;  $SHELL"
+branch_merge=$(zenity --forms --title="Git Merge" --add-entry="Merge Branch Name" 2> /dev/null)
+exit1
+gnome-terminal -x bash -c "git merge $branch_merge ; $SHELL"
+Status[7]="Done"
 }
 ###########################################################################################################
 dir_selection
@@ -431,6 +461,22 @@ app_yaml
 fi
 fi
 #########
+if [ $option == "Git_Merge" ]
+then
+if [ ${Status[7]} == "Done" ]
+then
+zenity --question --text="Are you sure want to edit again?" --title="Aready Done!" --ok-label="Yes" --cancel-label="No" 2> /dev/null
+case $? in
+    "1")
+      Popup ;;
+    "0")
+      git_merge ;;
+esac
+else
+git_merge
+fi
+fi
+#########
 if [ $option == "Settings" ]
 then 
 settings
@@ -482,7 +528,6 @@ git_pull
 fi
 fi
 done
-
 elif [ $1 == "uninstall" ]
 then
 if [ $(whoami) != "root" ]
