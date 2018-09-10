@@ -61,7 +61,7 @@ exit1
 ##################################################################################################
 Popup()
 {
-option=$( zenity --list --column "Select Process" --column "Status" --column "Diectory"  "Git_Pull" "${Status[0]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Pull | cut -d ":" -f2)"  "Change_Backend_Config" "${Status[1]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Backend_Config |  cut -d ":" -f2)" "Change_Docker_Version" "${Status[2]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Docker_Version |  cut -d ":" -f2)"  "Git_Push" "${Status[3]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Push |  cut -d ":" -f2)" "Settings" --width=$W --height=$H 2> /dev/null)
+option=$( zenity --list --column "Select Process" --column "Status" --column "Diectory"  "Git_Pull" "${Status[0]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Pull | cut -d ":" -f2)"  "Change_Backend_Config" "${Status[1]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Backend_Config |  cut -d ":" -f2)" "Change_Docker_Version" "${Status[2]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Change_Docker_Version |  cut -d ":" -f2)"  "Git_Push" "${Status[3]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Push |  cut -d ":" -f2)"  "Git_Checkout_merge" "${Status[4]}" "$(cat /usr/local/src/crmapipromote/api_folder_status | grep -i Git_Merge |  cut -d ":" -f2)"  "Settings" --width=$W --height=$H 2> /dev/null)
 exit1
 }
 ##################################################################################################
@@ -73,6 +73,7 @@ echo "Git_Pull:" >> /usr/local/src/crmapipromote/api_folder_status
 echo "Change_Backend_Config:" >> /usr/local/src/crmapipromote/api_folder_status
 echo "Change_Docker_Version:" >> /usr/local/src/crmapipromote/api_folder_status
 echo "Git_Push:" >> /usr/local/src/crmapipromote/api_folder_status
+echo "Git_Merge:" >>  /usr/local/src/crmapipromote/api_folder_status
 fi
 }
 ##################################################################################################
@@ -199,6 +200,27 @@ pull_branch=$(zenity --forms --title="Git Pull" --add-entry="Branch Name" 2> /de
 exit1
 gnome-terminal -x bash -c 'git pull origin $pull_branch ; sleep 1000'
 Status[0]="Done"
+}
+############################################################################################################
+git_merge()
+{
+dir_selection
+dir5=$(cat /usr/local/src/crmapipromote/api_folder_status | grep "Git_Merge:"| cut -d ':' -f2  )
+if [ -z $dir5 ]
+then 
+dir51=$(zenity --title="Select path for Git_Merge" --file-selection --directory 2> /dev/null)
+exit1
+sed -i "s|Git_Pull:|Git_Pull:$dir41|g" /usr/local/src/crmapipromote/api_folder_status
+cd $dir51
+else
+cd $dir5
+fi
+git_merge=$(zenity --forms --title="Git Merge" --add-entry="Checkout Branch Name" --add-entry="Merge Branch Name" 2> /dev/null)
+exit1
+branch_checkout=$(echo $git_merge |cut -d '|' -f1 )
+branch_merge=$(echo $git_merge |cut -d '|' -f2 )
+gnome-terminal -x bash -c "git checkout $branch_checkout && "
+Status[4]="Done"
 }
 #############################################################################################################
 settings()
