@@ -6,26 +6,26 @@ echo "where  OBJECT := { install | start | uninstall }"
 echo "install: For install desktop icon"
 echo "start: Use app by CLI"
 echo "uninstall: For uninstall app"
-elif [ $1 == "install" ]
-then 
-if [ $(whoami) != "root" ]
-then
-echo " ____  __    ____   __   ____  ____        ____  _  _  __ _         __   ____        ____   __    __   ____ 
-(  _ \(  )  (  __) / _\ / ___)(  __)      (  _ \/ )( \(  ( \       / _\ / ___)      (  _ \ /  \  /  \ (_  _)
- ) __// (_/\ ) _) /    \\___ \ ) _)         )   /) \/ (/    /      /    \\___ \        )   /(  O )(  O )  )(  
-(__)  \____/(____)\_/\_/(____/(____)      (__\_)\____/\_)__)      \_/\_/(____/      (__\_) \__/  \__/  (__) "
-else
-user=$(who|awk '{print $1}')
-homedir=$(cat /etc/passwd | grep -i $user | cut -d ":" -f6)
-user1=$(echo $homedir | awk -F/ "{print $3}")
-group=$(cat /etc/group | grep -i $user1 | awk -F: {"print $1"})
-wget -P /usr/local/src/crmpromote ftp://ftp.iface.io/CRM-PROMOTE.png 
-chown -R $user:$group /usr/local/src/crmpromote
-wget -P  $homedir/Desktop ftp://ftp.iface.io/Crm.desktop
-chown -R $user:$group $homedir/Desktop/Crm.desktop
-chmod +x $homedir/Desktop/Crm.desktop
-sed -i "9i rm -rf /tmp/crm_done_task" /etc/init/shutdown.conf
-fi
+#elif [ $1 == "install" ]
+#then 
+#if [ $(whoami) != "root" ]
+#then
+#echo " ____  __    ____   __   ____  ____        ____  _  _  __ _         __   ____        ____   __    __   ____ 
+#(  _ \(  )  (  __) / _\ / ___)(  __)      (  _ \/ )( \(  ( \       / _\ / ___)      (  _ \ /  \  /  \ (_  _)
+# ) __// (_/\ ) _) /    \\___ \ ) _)         )   /) \/ (/    /      /    \\___ \        )   /(  O )(  O )  )(  
+#(__)  \____/(____)\_/\_/(____/(____)      (__\_)\____/\_)__)      \_/\_/(____/      (__\_) \__/  \__/  (__) "
+#else
+#user=$(who|awk '{print $1}')
+#homedir=$(cat /etc/passwd | grep -i $user | cut -d ":" -f6)
+#user1=$(echo $homedir | awk -F/ "{print $3}")
+#group=$(cat /etc/group | grep -i $user1 | awk -F: {"print $1"})
+#wget -P /usr/local/src/crmpromote ftp://ftp.iface.io/CRM-PROMOTE.png 
+#chown -R $user:$group /usr/local/src/crmpromote
+#wget -P  $homedir/Desktop ftp://ftp.iface.io/Crm.desktop
+#chown -R $user:$group $homedir/Desktop/Crm.desktop
+#chmod +x $homedir/Desktop/Crm.desktop
+#sed -i "9i rm -rf /tmp/crm_done_task" /etc/init/shutdown.conf
+#fi
 elif [ $1 == "start" ]
 then
 # resizes the window to full height and 50% width and moves into upper right corner
@@ -171,7 +171,7 @@ cd $dir21
 else
 cd $dir3
 fi
-gnome-terminal -x bash -ic 'node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --prod ; sleep 86400'
+gnome-terminal -x bash -ic "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --prod ; $SHELL"
 Status[3]="Done"
 }
 ##################################################################################################
@@ -220,7 +220,7 @@ cd $dir51
 else
 cd $dir5
 fi
-gnome-terminal -x bash -ic 'gulp build ; sleep 86400'
+gnome-terminal -x bash -ic "gulp build ; $SHELL"
 Status[5]="Done"
 }
 ##########################################################################################################
@@ -245,7 +245,7 @@ cred_type=$(zenity --list "BY_SSH" "BY_Credentials" --column "Select Method" 2> 
 exit1
 if [ $cred_type == "BY_SSH" ]
 then
-gnome-terminal -x bash -ic "git push origin $branch; sleep 86400"
+gnome-terminal -x bash -ic "git push origin $branch; $SHELL"
 Status[6]="Done"
 elif [ $cred_type == "BY_Credentials" ]
 then
@@ -255,7 +255,7 @@ if [[ -z $username  ]] || [[ -z $password ]]
 then
 zenity --error --text="Please Enter Username and Password" 2> /dev/null
 else
-gnome-terminal -x bash -ic "git push https://$username:$password@github.com/iface1/dev-iface-crm.git $branch; sleep 86400" 
+gnome-terminal -x bash -ic "git push https://$username:$password@github.com/iface1/dev-iface-crm.git $branch; $SHELL" 
 Status[6]="Done"
 fi
 fi
@@ -276,7 +276,7 @@ cd $dir7
 fi
 pull_branch=$(zenity --forms --title="Git Pull" --add-entry="Branch Name" 2> /dev/null)
 exit1
-gnome-terminal -x bash -ic "git pull origin $pull_branch; sleep 86400"
+gnome-terminal -x bash -ic "git pull origin $pull_branch; $SHELL"
 Status[0]="Done"
 }
 ##########################################################################################################

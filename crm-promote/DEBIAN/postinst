@@ -1,0 +1,9 @@
+#!/bin/bash
+user=$(who|awk '{print $1}')
+homedir=$(cat /etc/passwd | grep -i $user | cut -d ":" -f6)
+user1=$(echo $homedir | awk -F/ "{print $3}")
+group=$(cat /etc/group | grep -i $user1 | awk -F: {"print $1"})
+chown -R $user:$group /usr/local/src/crmpromote
+mv /usr/local/src/crmpromote/Crm.desktop $homedir/Desktop 
+chmod +x $homedir/Desktop/Crm.desktop
+sed -i "9i rm -rf /tmp/crm_done_task" /etc/init/shutdown.conf

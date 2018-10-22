@@ -1,0 +1,7 @@
+#!/bin/bash
+user=$(who|awk '{print $1}')
+homedir=$(cat /etc/passwd | grep -i $user | cut -d ":" -f6)
+cd /usr/local/src
+rm -rf crmpromote
+rm -rf $homedir/Desktop/Crm.desktop
+sed -i "9 s|rm -rf /tmp/crm_done_task| |" /etc/init/shutdown.conf
