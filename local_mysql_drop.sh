@@ -6,13 +6,11 @@ then
 exit 1
 fi
 }
-instance=$(zenity --list --column "instance name" $(gcloud sql instances list | awk '{print $1}' | tail -n +2) 2> /dev/null)
-exit1
-#read -p 'Enter Instance name of Cloud SQL': instance
 selection=$(zenity --list --checklist --column "" --column  "Action Perform on" "" Database "" User 2> /dev/null)
+echo $selection
 exit1
 if [ $selection == "Database" ]
-then
+then 
 	Database=$selection
 elif [ $selection == "User" ]
 then
@@ -22,7 +20,7 @@ IFS="|" read -r Database User <<< "$selection"
 fi
 if [ ! -z  $Database ]
 then
-databases=$(gcloud sql databases list -i $instance | grep -i  iface_crm_user | awk '{print $1}')
+databases=$(mysql -u root -p"Iface#@123!" -h 192.168.1.18 -P 3307 -e 'show databases;' | grep iface_crm_user 2> /dev/null)
 if [ -z $databases ]
 then
 	zenity --info --text="No User Database exist" 2> /dev/null
@@ -35,7 +33,7 @@ fi
 fi
 if [ ! -z  $User ]
 then
-user=$(gcloud sql users list -i $instance | grep -i iface_crm_user| awk '{print $1}')
+user=$(mysql -u root -p"Iface#@123!" -h 192.168.1.18 -P 3307 -e 'select user from mysql.user;'| grep iface_crm_user 2> /dev/null)
 if [ -z $user ]
 then
 	zenity --info --text="No Client User exist" 2> /dev/null
@@ -50,12 +48,9 @@ if [ -z $user ] && [ -z $databases ]
 then
 	exit 1
 fi
-zenity --text-info --filename=./mysql_drop.sql
+zenity --text-info --filename=./mysql_drop.sql 2> /dev/null
+exit1
 zenity --question
 exit1
-gsutil cp mysql_drop.sql gs://crm-remove-databse-user/
-service_account=$(gcloud sql instances describe $instance | grep serviceAccountEmailAddress | awk -F ':' '{print $2}')
-gsutil acl ch -u $service_account:W gs://crm-remove-databse-user/
-gsutil acl ch -u $service_account:R gs://crm-remove-databse-user/mysql_drop.sql
-gcloud sql import sql $instance gs://crm-remove-databse-user/mysql_drop.sql
+mysql -u root -p"Iface#@123!" -h 192.168.1.18 -P 3307 < mysql_drop.sql 2> /dev/null
 rm -rf mysql_drop.sql
